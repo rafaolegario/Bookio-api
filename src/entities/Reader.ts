@@ -1,33 +1,26 @@
+import { UniqueEntityId } from "./UniqueEntityId";
 import { User, UserProps } from "./User";
-
 export interface ReaderProps {
-  pictureUrl: string;
+  pictureUrl?: string;
   cpf: string;
-  active: boolean;
-  suspense: number;
-  libraryId: string;
-  booksId: string[];
- 
+  active?: boolean;
+  suspense?: number;
+  libraryId: UniqueEntityId;
 }
-
 export class Reader extends User {
   private pictureUrl: string;
   private cpf: string;
   private active: boolean;
   private suspense: number;
-  private libraryId: string;
-  private booksId: string[];
+  private libraryId: UniqueEntityId;
  
-
   constructor(props: UserProps & ReaderProps) {
     super(props);
-    this.pictureUrl = props.pictureUrl;
+    this.pictureUrl = props.pictureUrl ?? '';
     this.cpf = props.cpf;
-    this.active = props.active;
-    this.suspense = props.suspense;
+    this.active = props.active ?? true;
+    this.suspense = props.suspense ?? 0;
     this.libraryId = props.libraryId;
-    this.booksId = props.booksId;
-    
   }
 
   public getPictureUrl(): string {
@@ -46,14 +39,9 @@ export class Reader extends User {
     return this.suspense;
   }
 
-  public getLibraryId(): string {
+  public getLibraryId(): UniqueEntityId {
     return this.libraryId;
   }
-
-  public getBooksId(): string[] {
-    return this.booksId;
-  }
-
 
   public setPictureUrl(pictureUrl: string): void {
     this.pictureUrl = pictureUrl;
@@ -75,23 +63,9 @@ export class Reader extends User {
     this.touch()
   }
 
-  public setLibraryId(libraryId: string): void {
+  public setLibraryId(libraryId: UniqueEntityId): void {
     this.libraryId = libraryId;
     this.touch()
   }
 
-  public setBooksId(booksId: string[]): void {
-    this.booksId = booksId;
-    this.touch()
-  }
-
-  public addBook(bookId: string): void {
-    this.booksId.push(bookId);
-    this.touch()
-  }
-
-  public removeBook(bookId: string): void {
-    this.booksId = this.booksId.filter(id => id !== bookId);
-    this.touch()
-  }
 }
