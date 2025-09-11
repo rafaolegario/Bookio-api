@@ -8,12 +8,17 @@ export type Address = {
   number: string;
 };
 
+export enum Roles  {
+  LIBRARY = 'LIBRARY',
+  READER = 'READER'
+}
+
 export interface UserProps {
   id?: UniqueEntityId;
   name: string;
   email: string;
   password: string;
-  role: "library" | "reader";
+  role: Roles;
   address: Address;
   createdAt?: Date;
   updatedAt?: Date
@@ -24,7 +29,7 @@ export class User {
   private name: string;
   private email: string;
   private password: string;
-  private role: "library" | "reader";
+  private role: Roles;
   private address: Address;
   private createdAt?: Date;
   private updatedAt?: Date
@@ -56,7 +61,7 @@ export class User {
     return this.password;
   }
 
-  public getRole(): "library" | "reader" {
+  public getRole(): Roles {
     return this.role;
   }
 
@@ -88,7 +93,7 @@ export class User {
     this.password = password;
   }
 
-  public setRole(role: "library" | "reader"): void {
+  public setRole(role: Roles): void {
     this.role = role;
   }
 
