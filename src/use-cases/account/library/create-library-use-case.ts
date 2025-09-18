@@ -19,7 +19,7 @@ interface createLibraryRequest {
 }
 
 export class CreateLibraryUseCase {
-  constructor(private LibraryRepository: LibraryRepository) {}
+  constructor(private LibraryRepository: LibraryRepository) { }
   async execute({
     name,
     email,
