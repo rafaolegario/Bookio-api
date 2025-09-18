@@ -16,7 +16,6 @@ export enum BookGenders {
 }
 
 export interface BookProps {
-  id?: UniqueEntityId;
   libraryId: UniqueEntityId;
   author: string;
   title: string;
@@ -30,7 +29,7 @@ export interface BookProps {
 }
 
 export class Book {
-  private id: UniqueEntityId;
+  private id?: number;
   private author: string;
   private libraryId: UniqueEntityId;
   private title: string;
@@ -43,7 +42,6 @@ export class Book {
   private updatedAt: Date;
 
   constructor(props: BookProps) {
-    this.id = props.id ?? new UniqueEntityId();
     this.author = props.author;
     this.libraryId = props.libraryId;
     this.title = props.title;
@@ -56,7 +54,7 @@ export class Book {
     this.updatedAt = props.updatedAt ?? new Date();
   }
 
-  public getId(): UniqueEntityId {
+  public getId(): number | undefined {
     return this.id;
   }
 
