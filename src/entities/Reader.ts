@@ -8,12 +8,12 @@ export interface ReaderProps {
   libraryId: UniqueEntityId;
 }
 export class Reader extends User {
-  private pictureUrl: string;
+  private pictureUrl?: string;
   private cpf: string;
   private active: boolean;
   private suspense: number;
   private libraryId: UniqueEntityId;
- 
+
   constructor(props: UserProps & ReaderProps) {
     super(props);
     this.pictureUrl = props.pictureUrl ?? '';
@@ -23,7 +23,7 @@ export class Reader extends User {
     this.libraryId = props.libraryId;
   }
 
-  public getPictureUrl(): string {
+  public getPictureUrl(): string | undefined {
     return this.pictureUrl;
   }
 
