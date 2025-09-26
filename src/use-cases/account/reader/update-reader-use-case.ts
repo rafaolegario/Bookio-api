@@ -18,7 +18,7 @@ interface updateReaderRequest {
 }
 
 export class UpdateReaderUseCase {
-  constructor(private readerRepository: ReaderRepository) {}
+  constructor(private readerRepository: ReaderRepository) { }
 
   async execute({
     readerId,
@@ -37,14 +37,14 @@ export class UpdateReaderUseCase {
     if (email && email !== reader.getEmail()) {
       const existingReaderByEmail = await this.readerRepository.findByEmail(email);
       if (existingReaderByEmail) {
-        throw new NotAllowedError();
+        throw new NotAllowedError('Este e-mail já está em uso por outro leitor');
       }
     }
 
     if (cpf && cpf !== reader.getCpf()) {
       const existingReaderByCpf = await this.readerRepository.findByCpf(cpf);
       if (existingReaderByCpf) {
-        throw new NotAllowedError();
+        throw new NotAllowedError('Este CPF já está em uso por outro leitor');
       }
     }
 

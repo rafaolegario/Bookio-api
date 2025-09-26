@@ -33,7 +33,7 @@ export class UpdateBookUseCase {
     const book = await this.bookRepository.findById(bookId);
 
     if (!book) {
-      throw new NotAllowedError();
+      throw new NotAllowedError('Livro não encontrado');
     }
 
     if (title) book.setTitle(title);

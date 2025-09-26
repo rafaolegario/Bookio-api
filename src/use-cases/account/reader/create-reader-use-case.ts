@@ -22,7 +22,7 @@ interface createReaderRequest {
 }
 
 export class CreateReaderUseCase {
-  constructor(private ReaderRepository: ReaderRepository) {}
+  constructor(private ReaderRepository: ReaderRepository) { }
   async execute({
     name,
     email,
@@ -35,13 +35,13 @@ export class CreateReaderUseCase {
     let reader = await this.ReaderRepository.findByEmail(email);
 
     if (reader) {
-      throw new NotAllowedError();
+      throw new NotAllowedError('Este e-mail já está cadastrado');
     }
 
     reader = await this.ReaderRepository.findByCpf(cpf);
 
     if (reader) {
-      throw new NotAllowedError();
+      throw new NotAllowedError('Este CPF já está cadastrado');
     }
 
     const hashedPassword = await hash(password, 6);

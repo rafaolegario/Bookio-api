@@ -1,5 +1,5 @@
 export class NotAllowedError extends Error {
-  constructor() {
-    super('Not allowed');
+  constructor(message: string = 'Not allowed') {
+    super(message);
   }
 }

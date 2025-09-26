@@ -9,7 +9,7 @@ interface DeleteLoanRequest {
 }
 
 export class DeleteLoanUseCase {
-  constructor(private loanRepository: LoanRepository) {}
+  constructor(private loanRepository: LoanRepository) { }
 
   async execute({ loanId, libraryId }: DeleteLoanRequest): Promise<void> {
     const loan = await this.loanRepository.findById(loanId, libraryId);
@@ -17,8 +17,8 @@ export class DeleteLoanUseCase {
       throw new NotFoundError();
     }
 
-    if(loan.getStatus() !== LoanStatus.Returned ) {
-      throw new NotAllowedError();
+    if (loan.getStatus !== LoanStatus.Returned) {
+      throw new NotAllowedError('Não é possível excluir um empréstimo que não foi devolvido');
     }
     await this.loanRepository.delete(loanId);
   }

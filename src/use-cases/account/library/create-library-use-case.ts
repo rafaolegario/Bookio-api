@@ -30,13 +30,13 @@ export class CreateLibraryUseCase {
     let library = await this.LibraryRepository.findByEmail(email);
 
     if (library) {
-      throw new NotAllowedError();
+      throw new NotAllowedError('Este e-mail já está cadastrado');
     }
 
     library = await this.LibraryRepository.findByCnpj(cnpj);
 
     if (library) {
-      throw new NotAllowedError();
+      throw new NotAllowedError('Este CNPJ já está cadastrado');
     }
 
     const hashedPassword = await hash(password, 6);

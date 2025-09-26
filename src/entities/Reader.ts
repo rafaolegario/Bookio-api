@@ -48,6 +48,20 @@ export class Reader extends User {
     this.touch()
   }
 
+  public incrementSuspension(days: number): void {
+    this.suspense += days;
+    this.touch()
+  }
+
+  public resetSuspension(): void {
+    this.suspense = 0;
+    this.touch()
+  }
+
+  public isSuspended(): boolean {
+    return this.suspense > 0;
+  }
+
   public setCpf(cpf: string): void {
     this.cpf = cpf;
     this.touch()

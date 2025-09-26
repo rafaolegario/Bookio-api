@@ -12,7 +12,7 @@ export class DeleteBookUseCase {
     const book = await this.bookRepository.findById(bookId);
 
     if (!book) {
-      throw new NotAllowedError();
+      throw new NotAllowedError('Livro não encontrado');
     }
 
     await this.bookRepository.delete(bookId);

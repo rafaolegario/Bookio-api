@@ -17,7 +17,7 @@ interface updateLibraryRequest {
 }
 
 export class UpdateLibraryUseCase {
-  constructor(private libraryRepository: LibraryRepository) {}
+  constructor(private libraryRepository: LibraryRepository) { }
 
   async execute({
     libraryId,
@@ -35,21 +35,21 @@ export class UpdateLibraryUseCase {
     if (email && email !== library.getEmail()) {
       const existingLibraryByEmail = await this.libraryRepository.findByEmail(email);
       if (existingLibraryByEmail) {
-        throw new NotAllowedError();
+        throw new NotAllowedError('Este e-mail já está em uso por outra biblioteca');
       }
     }
 
     if (cnpj && cnpj !== library.getCnpj()) {
       const existingLibraryByCnpj = await this.libraryRepository.findByCnpj(cnpj);
       if (existingLibraryByCnpj) {
-        throw new NotAllowedError();
+        throw new NotAllowedError('Este CNPJ já está em uso por outra biblioteca');
       }
     }
 
     if (name) library.setName(name);
     if (email) library.setEmail(email);
     if (cnpj) library.setCnpj(cnpj);
-   if (address) {
+    if (address) {
       const validatedAddress = {
         cep: address.cep || "",
         street: address.street || "",

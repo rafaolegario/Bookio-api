@@ -31,7 +31,7 @@ export class CreateBookUseCase {
     );
 
     if (existingBook) {
-      throw new NotAllowedError();
+      throw new NotAllowedError('Já existe um livro com este título na biblioteca');
     }
 
     const book = new Book({
