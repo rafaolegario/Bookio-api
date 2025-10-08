@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BookGender {
+  Fiction
+  NonFiction
+  Fantasy
+  ScienceFiction
+  Mystery
+  Romance
+  Thriller
+  Horror
+  Biography
+  History
+  Poetry
+  SelfHelp
+}
+
+enum Role {
+  LIBRARY
+  READER
+}
+
+enum LoanStatus {
+  Returned
+  Overdue
+  Borrowed
+}
+
+enum SchedulingStatus {
+  PENDING
+  EXPIRED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String
+  role         Role
+  cep          String
+  street       String
+  neighborhood String
+  city         String
+  number       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Campos específicos para Library (nullable quando role = READER)
+  cnpj         String?  @unique
+
+  // Campos específicos para Reader (nullable quando role = LIBRARY)
+  cpf          String?  @unique
+  pictureUrl   String?
+  active       Boolean?
+  suspense     Int?
+  libraryId    String?
+
+  // Relations
+  library      User?    @relation("LibraryReaders", fields: [libraryId], references: [id])
+  readers      User[]   @relation("LibraryReaders")
+
+  // Only when role = LIBRARY
+  books        Book[]   @relation("LibraryBooks")
+
+  // Only when role = READER
+  loans        Loan[]   @relation("ReaderLoans")
+  schedulings  Scheduling[] @relation("ReaderSchedulings")
+  penalties    Penality[] @relation("ReaderPenalties")
+
+  @@map("users")
+}
+
+model Book {
+  id          Int        @id @default(autoincrement())
+  libraryId   String
+  author      String
+  title       String
+  imageUrl    String?
+  gender      BookGender
+  year        DateTime
+  available   Int
+  totalLoans  Int        @default(0) @map("total_loans")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  library     User       @relation("LibraryBooks", fields: [libraryId], references: [id])
+  loans       Loan[]
+  schedulings Scheduling[]
+
+  @@map("books")
+}
+
+model Loan {
+  id               String     @id @default(uuid())
+  bookId           Int
+  readerId         String
+  returnDate       DateTime
+  dueDate          DateTime
+  status           LoanStatus
+  actualReturnDate DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  book             Book       @relation(fields: [bookId], references: [id])
+  reader           User       @relation("ReaderLoans", fields: [readerId], references: [id])
+  penality         Penality?
+
+  @@map("loans")
+}
+
+model Scheduling {
+  id        String            @id @default(uuid())
+  readerId  String
+  bookId    Int
+  status    SchedulingStatus
+  createdAt DateTime          @default(now())
+  expiresAt DateTime
+  updatedAt DateTime          @updatedAt
+
+  reader    User              @relation("ReaderSchedulings", fields: [readerId], references: [id])
+  book      Book              @relation(fields: [bookId], references: [id])
+
+  @@map("schedulings")
+}
+
+model Penality {
+  id        String   @id @default(uuid())
+  readerId  String
+  loanId    String   @unique
+  amount    Float
+  paid      Boolean  @default(false)
+  dueDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reader    User     @relation("ReaderPenalties", fields: [readerId], references: [id])
+  loan      Loan     @relation(fields: [loanId], references: [id])
+
+  @@map("penalties")
+}
