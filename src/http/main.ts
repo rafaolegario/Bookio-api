@@ -21,6 +21,8 @@ import { PrismaLoanRepository } from '../repositories/prisma/prisma-loan-reposit
 import { PrismaPenalityRepository } from '../repositories/prisma/prisma-penality-repository'
 import { PrismaSchedulingRepository } from '../repositories/prisma/prisma-scheduling-repository'
 import { PrismaReaderRepository } from '../repositories/prisma/prisma-reader-repository'
+import 'module-alias/register';
+
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
