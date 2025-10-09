@@ -5,13 +5,12 @@ import { UniqueEntityId } from '@/entities/UniqueEntityId'
 import { Roles } from '@/entities/User'
 
 export class PrismaReaderRepository implements ReaderRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaClient) { }
 
   async findByEmail(email: string): Promise<Reader | null> {
     const user = await this.prisma.user.findFirst({
       where: {
         email,
-        role: 'READER',
       },
     })
 

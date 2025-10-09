@@ -5,11 +5,11 @@ import { PrismaReaderRepository } from '@/repositories/prisma/prisma-reader-repo
 import { PrismaClient } from '@prisma/client'
 import { CreateReaderUseCase } from '@/use-cases/account/reader/create-reader-use-case'
 import { S3StorageService } from '@/services/storage/s3-storage-service'
+import { ResendMailProvider } from '@/providers/resend-mail-provider'
 
 const createReaderBodySchema = z.object({
   name: z.string(),
   email: z.string().email(),
-  password: z.string().min(6),
   libraryId: z.string().uuid(),
   cpf: z.string(),
   address: z.object({
@@ -73,17 +73,17 @@ export async function CreateReaderController(
       })
     }
 
-    const { name, email, password, libraryId, cpf, address } =
+    const { name, email, libraryId, cpf, address } =
       createReaderBodySchema.parse(bodyData)
 
     const prisma = new PrismaClient()
     const readerRepository = new PrismaReaderRepository(prisma)
-    const createReaderUseCase = new CreateReaderUseCase(readerRepository)
+    const mailProvider = new ResendMailProvider()
+    const createReaderUseCase = new CreateReaderUseCase(readerRepository, mailProvider)
 
     await createReaderUseCase.execute({
       name,
       email,
-      password,
       libraryId,
       cpf,
       pictureUrl,
@@ -96,6 +96,10 @@ export async function CreateReaderController(
       return reply.status(409).send({ message: error.message })
     }
 
-    throw error
+    console.error('Error creating reader:', error)
+    return reply.status(500).send({
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
   }
 }

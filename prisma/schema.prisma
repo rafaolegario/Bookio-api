@@ -136,17 +136,18 @@ model Scheduling {
 }
 
 model Penality {
-  id        String   @id @default(uuid())
-  readerId  String
-  loanId    String   @unique
-  amount    Float
-  paid      Boolean  @default(false)
-  dueDate   DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  readerId    String
+  loanId      String   @unique
+  amount      Float
+  paid        Boolean  @default(false)
+  dueDate     DateTime
+  paymentLink String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  reader    User     @relation("ReaderPenalties", fields: [readerId], references: [id])
-  loan      Loan     @relation(fields: [loanId], references: [id])
+  reader      User     @relation("ReaderPenalties", fields: [readerId], references: [id])
+  loan        Loan     @relation(fields: [loanId], references: [id])
 
   @@map("penalties")
 }

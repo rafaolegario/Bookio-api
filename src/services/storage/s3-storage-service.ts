@@ -14,34 +14,52 @@ export interface UploadParams {
 export class S3StorageService {
   private client: S3Client
   private bucketName: string
+  private publicUrl: string
 
   constructor() {
+    const accountId = process.env.R2_ACCOUNT_ID || ''
+
     this.client = new S3Client({
-      region: process.env.AWS_REGION || 'us-east-1',
+      region: 'auto',
+      endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+        accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
       },
     })
-    this.bucketName = process.env.AWS_BUCKET_NAME || ''
+    this.bucketName = process.env.R2_BUCKET_NAME || ''
+    this.publicUrl = process.env.R2_PUBLIC_URL || ''
   }
 
   async upload({ file, fileName, contentType }: UploadParams): Promise<string> {
-    const fileKey = `${randomUUID()}-${fileName}`
+    try {
+      const fileKey = `${randomUUID()}-${fileName}`
 
-    const command = new PutObjectCommand({
-      Bucket: this.bucketName,
-      Key: fileKey,
-      Body: file,
-      ContentType: contentType,
-      ACL: 'public-read',
-    })
+      console.log('Upload config:', {
+        bucket: this.bucketName,
+        fileKey,
+        contentType,
+        fileSize: file.length,
+      })
 
-    await this.client.send(command)
+      const command = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: fileKey,
+        Body: file,
+        ContentType: contentType,
+      })
 
-    const fileUrl = `https://${this.bucketName}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${fileKey}`
+      await this.client.send(command)
 
-    return fileUrl
+      const fileUrl = `${this.publicUrl}/${fileKey}`
+
+      console.log('Upload successful:', fileUrl)
+
+      return fileUrl
+    } catch (error) {
+      console.error('R2 Upload error:', error)
+      throw new Error(`Failed to upload file: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
   }
 
   async delete(fileUrl: string): Promise<void> {

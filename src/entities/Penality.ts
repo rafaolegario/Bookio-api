@@ -6,6 +6,7 @@ interface PenalityProps {
   amount: number
   paid: boolean
   dueDate: Date
+  paymentLink?: string
   createdAt: Date
   updatedAt?: Date
 }
@@ -55,8 +56,17 @@ export class Penality {
     return this.props.updatedAt
   }
 
+  get paymentLink() {
+    return this.props.paymentLink
+  }
+
   set paid(paid: boolean) {
     this.props.paid = paid
+    this.props.updatedAt = new Date()
+  }
+
+  set paymentLink(link: string | undefined) {
+    this.props.paymentLink = link
     this.props.updatedAt = new Date()
   }
 

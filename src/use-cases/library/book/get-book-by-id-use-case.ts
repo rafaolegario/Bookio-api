@@ -7,7 +7,7 @@ interface GetBookByIdRequest {
 }
 
 interface GetBookByIdResponse {
-  book: Book | NotFoundError;
+  book: Book;
 }
 
 export class GetBookByIdUseCase {

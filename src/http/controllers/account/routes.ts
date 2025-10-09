@@ -10,6 +10,8 @@ import { GetReaderController } from './get-reader.controller'
 import { GetReadersByLibraryController } from './get-readers-by-library.controller'
 import { UpdateReaderController } from './update-reader.controller'
 import { DeleteUserController } from './delete-user.controller'
+import { libraryOnlyMiddleware } from '../../middleware/library-only'
+import { authMiddleware } from '../../middleware/auth'
 
 export async function accountRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -70,6 +72,7 @@ export async function accountRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
     '/library/:libraryId',
     {
+      onRequest: [authMiddleware],
       schema: {
         tags: ['Biblioteca'],
         summary: 'Buscar biblioteca por ID',
@@ -107,6 +110,7 @@ export async function accountRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().put(
     '/library/:libraryId',
     {
+      onRequest: [libraryOnlyMiddleware],
       schema: {
         tags: ['Biblioteca'],
         summary: 'Atualizar biblioteca',
@@ -159,11 +163,12 @@ export async function accountRoutes(app: FastifyInstance) {
   app.post(
     '/reader',
     {
+      onRequest: [libraryOnlyMiddleware],
       schema: {
         tags: ['Leitor'],
         summary: 'Criar novo leitor',
         description:
-          'Envie multipart/form-data com: 1) campo "data" contendo JSON com {name, email, password, libraryId, cpf, address: {cep, street, neighborhood, city, number}} e 2) campo opcional "picture" com a imagem de perfil',
+          'Envie multipart/form-data com: 1) campo "data" contendo JSON com {name, email, libraryId, cpf, address: {cep, street, neighborhood, city, number}} e 2) campo opcional "picture" com a imagem de perfil. Uma senha aleatória será gerada e enviada por email.',
         consumes: ['multipart/form-data'],
         response: {
           201: z.null(),
@@ -182,6 +187,7 @@ export async function accountRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
     '/reader/:readerId',
     {
+      onRequest: [authMiddleware],
       schema: {
         tags: ['Leitor'],
         summary: 'Buscar leitor por ID',
@@ -223,6 +229,7 @@ export async function accountRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
     '/library/:libraryId/readers',
     {
+      onRequest: [libraryOnlyMiddleware],
       schema: {
         tags: ['Leitor'],
         summary: 'Listar leitores de uma biblioteca',
@@ -264,6 +271,7 @@ export async function accountRoutes(app: FastifyInstance) {
   app.put(
     '/reader/:readerId',
     {
+      onRequest: [authMiddleware],
       schema: {
         tags: ['Leitor'],
         summary: 'Atualizar leitor',
@@ -310,6 +318,7 @@ export async function accountRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().delete(
     '/user/:userId',
     {
+      onRequest: [authMiddleware],
       schema: {
         tags: ['Usuário'],
         summary: 'Deletar usuário',

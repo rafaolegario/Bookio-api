@@ -4,6 +4,7 @@ import { NotAllowedError } from '@/use-cases/errors/not-allowed-error'
 import { PrismaLibraryRepository } from '@/repositories/prisma/prisma-library-repository'
 import { PrismaClient } from '@prisma/client'
 import { CreateLibraryUseCase } from '@/use-cases/account/library/create-library-use-case'
+import { ResendMailProvider } from '@/providers/resend-mail-provider'
 
 export async function CreateLibraryController(
   request: FastifyRequest,
@@ -29,7 +30,11 @@ export async function CreateLibraryController(
   try {
     const prisma = new PrismaClient()
     const libraryRepository = new PrismaLibraryRepository(prisma)
-    const createLibraryUseCase = new CreateLibraryUseCase(libraryRepository)
+    const mailProvider = new ResendMailProvider()
+    const createLibraryUseCase = new CreateLibraryUseCase(
+      libraryRepository,
+      mailProvider
+    )
 
     await createLibraryUseCase.execute({
       name,
@@ -45,6 +50,10 @@ export async function CreateLibraryController(
       return reply.status(409).send({ message: error.message })
     }
 
-    throw error
+    console.error('Error creating library:', error)
+    return reply.status(500).send({
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
   }
 }
