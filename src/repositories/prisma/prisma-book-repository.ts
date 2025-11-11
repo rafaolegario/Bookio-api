@@ -16,7 +16,7 @@ export class PrismaBookRepository implements BookRepository {
 
     if (!book) return null
 
-    return new Book({
+    const newBook = new Book({
       libraryId: new UniqueEntityId(book.libraryId),
       author: book.author,
       title: book.title,
@@ -28,6 +28,9 @@ export class PrismaBookRepository implements BookRepository {
       createdAt: book.createdAt,
       updatedAt: book.updatedAt,
     })
+
+    newBook.setId(book.id)
+    return newBook
   }
 
   async findById(bookId: string): Promise<Book | null> {
@@ -37,7 +40,7 @@ export class PrismaBookRepository implements BookRepository {
 
     if (!book) return null
 
-    return new Book({
+    const newBook = new Book({
       libraryId: new UniqueEntityId(book.libraryId),
       author: book.author,
       title: book.title,
@@ -49,6 +52,9 @@ export class PrismaBookRepository implements BookRepository {
       createdAt: book.createdAt,
       updatedAt: book.updatedAt,
     })
+
+    newBook.setId(book.id)
+    return newBook
   }
 
   async findByLibraryId(libraryId: string): Promise<Book[]> {
@@ -56,21 +62,22 @@ export class PrismaBookRepository implements BookRepository {
       where: { libraryId },
     })
 
-    return books.map(
-      (book) =>
-        new Book({
-          libraryId: new UniqueEntityId(book.libraryId),
-          author: book.author,
-          title: book.title,
-          imageUrl: book.imageUrl ?? undefined,
-          gender: book.gender as BookGenders,
-          year: book.year,
-          available: book.available,
-          total_loans: book.totalLoans,
-          createdAt: book.createdAt,
-          updatedAt: book.updatedAt,
-        })
-    )
+    return books.map((book) => {
+      const newBook = new Book({
+        libraryId: new UniqueEntityId(book.libraryId),
+        author: book.author,
+        title: book.title,
+        imageUrl: book.imageUrl ?? undefined,
+        gender: book.gender as BookGenders,
+        year: book.year,
+        available: book.available,
+        total_loans: book.totalLoans,
+        createdAt: book.createdAt,
+        updatedAt: book.updatedAt,
+      })
+      newBook.setId(book.id)
+      return newBook
+    })
   }
 
   async findByGender(gender: BookGenders): Promise<Book[]> {
@@ -78,25 +85,26 @@ export class PrismaBookRepository implements BookRepository {
       where: { gender },
     })
 
-    return books.map(
-      (book) =>
-        new Book({
-          libraryId: new UniqueEntityId(book.libraryId),
-          author: book.author,
-          title: book.title,
-          imageUrl: book.imageUrl ?? undefined,
-          gender: book.gender as BookGenders,
-          year: book.year,
-          available: book.available,
-          total_loans: book.totalLoans,
-          createdAt: book.createdAt,
-          updatedAt: book.updatedAt,
-        })
-    )
+    return books.map((book) => {
+      const newBook = new Book({
+        libraryId: new UniqueEntityId(book.libraryId),
+        author: book.author,
+        title: book.title,
+        imageUrl: book.imageUrl ?? undefined,
+        gender: book.gender as BookGenders,
+        year: book.year,
+        available: book.available,
+        total_loans: book.totalLoans,
+        createdAt: book.createdAt,
+        updatedAt: book.updatedAt,
+      })
+      newBook.setId(book.id)
+      return newBook
+    })
   }
 
-  async create(book: Book): Promise<void> {
-    await this.prisma.book.create({
+  async create(book: Book): Promise<Book> {
+    const createdBook = await this.prisma.book.create({
       data: {
         libraryId: book.getLibraryId().toString(),
         author: book.getAuthor(),
@@ -110,6 +118,22 @@ export class PrismaBookRepository implements BookRepository {
         updatedAt: book.getUpdatedAt(),
       },
     })
+
+    const newBook = new Book({
+      libraryId: new UniqueEntityId(createdBook.libraryId),
+      author: createdBook.author,
+      title: createdBook.title,
+      imageUrl: createdBook.imageUrl ?? undefined,
+      gender: createdBook.gender as BookGenders,
+      year: createdBook.year,
+      available: createdBook.available,
+      total_loans: createdBook.totalLoans,
+      createdAt: createdBook.createdAt,
+      updatedAt: createdBook.updatedAt,
+    })
+
+    newBook.setId(createdBook.id)
+    return newBook
   }
 
   async delete(bookId: string): Promise<void> {

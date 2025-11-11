@@ -58,6 +58,10 @@ export class Book {
     return this.id;
   }
 
+  public setId(id: number): void {
+    this.id = id;
+  }
+
   public getAuthor(): string {
     return this.author;
   }

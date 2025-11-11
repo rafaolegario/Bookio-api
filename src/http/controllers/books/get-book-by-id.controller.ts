@@ -21,7 +21,7 @@ export async function GetBookByIdController(
       title: book.getTitle(),
       author: book.getAuthor(),
       gender: book.getGender(),
-      year: book.getYear(),
+      year: book.getYear().toISOString(),
       available: book.getAvailable(),
       imageUrl: book.getImageUrl(),
     }
