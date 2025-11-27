@@ -9,6 +9,7 @@ const createReaderBodySchema = z.object({
   name: z.string(),
   email: z.string().email(),
   libraryId: z.string().uuid(),
+  password: z.string().min(6),
   cpf: z.string(),
   address: z.object({
     cep: z.string(),
@@ -24,25 +25,25 @@ export async function CreateReaderController(
   reply: FastifyReply,
 ) {
   try {
-    const { name, email, libraryId, cpf, address } =
+    const { name, email, libraryId, cpf, address, password } =
       createReaderBodySchema.parse(request.body)
 
     const prisma = new PrismaClient()
     const readerRepository = new PrismaReaderRepository(prisma)
     const createReaderUseCase = new CreateReaderUseCase(readerRepository)
-
-    const { password } = await createReaderUseCase.execute({
+    const numero = Math.floor(Math.random() * 90)
+    const { } = await createReaderUseCase.execute({
       name,
       email,
       libraryId,
       cpf,
-      pictureUrl: '',
+      password,
+      pictureUrl: `https://randomuser.me/api/portraits/men/${numero}.jpg`,
       Address: address,
     })
 
     return reply.status(201).send({
       message: 'Reader created successfully',
-      password // Retorna a senha gerada
     })
   } catch (error) {
     if (error instanceof NotAllowedError) {

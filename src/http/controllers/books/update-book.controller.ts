@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { PrismaClient } from '@prisma/client'
 import { PrismaBookRepository } from '@/repositories/prisma/prisma-book-repository'
 import { UpdateBookUseCase } from '@/use-cases/library/book/update-book-use-case'
-import { S3StorageService } from '@/services/storage/s3-storage-service'
 import { BookGenders } from '@/entities/Book'
 
 const updateBookSchema = z.object({
@@ -34,39 +33,7 @@ export async function UpdateBookController(
   const { bookId } = request.params as { bookId: string }
 
   try {
-    const parts = request.parts()
-    let imageUrl: string | undefined
-    let bodyData: any = null
-
-    for await (const part of parts) {
-      if (part.type === 'file' && part.fieldname === 'image') {
-        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
-        if (!allowedMimeTypes.includes(part.mimetype)) {
-          return reply.status(400).send({
-            message: 'Invalid file type. Only JPEG, PNG and WEBP are allowed',
-          })
-        }
-
-        const maxSize = 5 * 1024 * 1024 // 5MB
-        const buffer = await part.toBuffer()
-
-        if (buffer.length > maxSize) {
-          return reply.status(400).send({
-            message: 'File too large. Maximum size is 5MB',
-          })
-        }
-
-        const storageService = new S3StorageService()
-        imageUrl = await storageService.upload({
-          file: buffer,
-          fileName: part.filename,
-          contentType: part.mimetype,
-        })
-      } else if (part.fieldname === 'data') {
-        const value = (part as any).value
-        bodyData = JSON.parse(value)
-      }
-    }
+    const bodyData = request.body
 
     if (!bodyData) {
       return reply.status(400).send({
@@ -84,7 +51,7 @@ export async function UpdateBookController(
       bookId,
       title: data.title,
       author: data.author,
-      imageUrl,
+      imageUrl: 'https://images.theconversation.com/files/45159/original/rptgtpxd-1396254731.jpg?ixlib=rb-4.1.0&q=45&auto=format&w=1356&h=668&fit=crop',
       gender: data.gender ? BookGenders[data.gender as keyof typeof BookGenders] : undefined,
       year: data.year,
       available: data.available,

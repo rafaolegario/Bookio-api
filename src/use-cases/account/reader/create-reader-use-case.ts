@@ -11,6 +11,7 @@ interface createReaderRequest {
   email: string;
   libraryId: string;
   cpf: string;
+  password: string;
   pictureUrl: string;
   Address: {
     cep: string;
@@ -19,18 +20,6 @@ interface createReaderRequest {
     city: string;
     number: string;
   };
-}
-
-function generateRandomPassword(length: number = 12): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
-  const bytes = randomBytes(length);
-  let password = '';
-
-  for (let i = 0; i < length; i++) {
-    password += chars[bytes[i] % chars.length];
-  }
-
-  return password;
 }
 
 export class CreateReaderUseCase {
@@ -43,6 +32,7 @@ export class CreateReaderUseCase {
     email,
     libraryId,
     cpf,
+    password,
     Address,
     pictureUrl
   }: createReaderRequest) {
@@ -58,9 +48,7 @@ export class CreateReaderUseCase {
       throw new NotAllowedError('Este CPF já está cadastrado');
     }
 
-    // Gera senha aleatória
-    const randomPassword = generateRandomPassword(12);
-    const hashedPassword = await hash(randomPassword, 6);
+    const hashedPassword = await hash(password, 6);
 
     reader = new Reader({
       name,
@@ -75,10 +63,8 @@ export class CreateReaderUseCase {
 
     await this.ReaderRepository.create(reader);
 
-    // Retorna a senha gerada para ser enviada pela API
     return {
       reader,
-      password: randomPassword
     };
   }
 }
