@@ -3,9 +3,11 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authMiddleware } from "../../middleware/auth";
 import { readerOnlyMiddleware } from "../../middleware/reader-only";
+import { libraryOnlyMiddleware } from "../../middleware/library-only";
 import { CreateSchedulingController } from "./create-scheduling.controller";
 import { GetSchedulingByIdController } from "./get-scheduling-by-id.controller";
 import { ListSchedulingsByReaderController } from "./list-schedulings-by-reader.controller";
+import { GetSchedulingsByLibraryIdController } from "./get-schedulings-by-library-id.controller";
 import { DeleteSchedulingController } from "./delete-scheduling.controller";
 
 export async function schedulingsRoutes(app: FastifyInstance) {
@@ -85,6 +87,35 @@ export async function schedulingsRoutes(app: FastifyInstance) {
         },
       },
       ListSchedulingsByReaderController,
+    );
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .get(
+      "/libraries/:libraryId/schedulings",
+      {
+        onRequest: [libraryOnlyMiddleware],
+        schema: {
+          tags: ["Agendamentos"],
+          summary: "Listar agendamentos de uma biblioteca",
+          params: z.object({ libraryId: z.string().uuid() }),
+          response: {
+            200: z.object({
+              schedulings: z.array(
+                z.object({
+                  id: z.string(),
+                  readerId: z.string(),
+                  bookId: z.string(),
+                  status: z.string(),
+                  createdAt: z.date(),
+                  expiresAt: z.date(),
+                  updatedAt: z.date().optional(),
+                }),
+              ),
+            }),
+          },
+        },
+      },
+      GetSchedulingsByLibraryIdController,
     );
   app
     .withTypeProvider<ZodTypeProvider>()

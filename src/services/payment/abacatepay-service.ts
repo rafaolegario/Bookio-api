@@ -36,22 +36,24 @@ export class AbacatepayService {
     dueDate,
   }: CreateBillingParams): Promise<BillingResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/billing`, {
+      const response = await fetch(`${this.baseUrl}/bill`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify({
-          amount: Math.round(amount * 100), // Converte para centavos
-          description,
-          customer: {
-            id: customerId,
-            name: customerName,
-            email: customerEmail,
-          },
-          dueDate: dueDate.toISOString(),
-          methods: ['PIX', 'CREDIT_CARD', 'BOLETO'],
+          frequency: 'one-time',
+          methods: ['PIX'],
+          products: [
+            {
+              externalId: customerId,
+              name: description,
+              description: description,
+              quantity: 1,
+              price: Math.round(amount * 100), // Converte para centavos
+            },
+          ],
         }),
       })
 
@@ -77,7 +79,7 @@ export class AbacatepayService {
 
   async getBillingStatus(billingId: string): Promise<string> {
     try {
-      const response = await fetch(`${this.baseUrl}/billing/${billingId}`, {
+      const response = await fetch(`${this.baseUrl}/bill/${billingId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -98,8 +100,8 @@ export class AbacatepayService {
 
   async cancelBilling(billingId: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/billing/${billingId}/cancel`, {
-        method: 'POST',
+      const response = await fetch(`${this.baseUrl}/bill/${billingId}`, {
+        method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
         },

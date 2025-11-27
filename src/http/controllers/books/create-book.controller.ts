@@ -5,6 +5,7 @@ import { PrismaBookRepository } from '@/repositories/prisma/prisma-book-reposito
 import { CreateBookUseCase } from '@/use-cases/library/book/create-book-use-case'
 import { S3StorageService } from '@/services/storage/s3-storage-service'
 import { BookGenders } from '@/entities/Book'
+import { NotAllowedError } from '@/use-cases/errors/not-allowed-error'
 
 const createBookBodySchema = z.object({
   libraryId: z.string().uuid(),
@@ -90,6 +91,8 @@ export async function CreateBookController(
       available,
     })
 
+    await prisma.$disconnect()
+
     return reply.status(201).send({
       book: {
         id: book.getId(),
@@ -98,6 +101,19 @@ export async function CreateBookController(
       }
     })
   } catch (error) {
+    if (error instanceof NotAllowedError) {
+      return reply.status(409).send({
+        message: error.message
+      })
+    }
+
+    if (error instanceof z.ZodError) {
+      return reply.status(400).send({
+        message: 'Validation error',
+        errors: error.issues
+      })
+    }
+
     console.error('Error creating book:', error)
     return reply.status(500).send({
       message: 'Internal server error',

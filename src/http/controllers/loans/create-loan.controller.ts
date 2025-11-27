@@ -6,7 +6,7 @@ import { PrismaPenalityRepository } from '@/repositories/prisma/prisma-penality-
 import { PrismaSchedulingRepository } from '@/repositories/prisma/prisma-scheduling-repository'
 import { PrismaReaderRepository } from '@/repositories/prisma/prisma-reader-repository'
 import { CreateLoanUseCase } from '@/use-cases/library/loans/create-loan-use-case'
-import { ResendMailProvider } from '@/providers/resend-mail-provider'
+import { NodemailerProvider } from '@/providers/nodemailer-provider'
 
 export async function CreateLoanController(
   request: FastifyRequest,
@@ -24,7 +24,7 @@ export async function CreateLoanController(
   const penalityRepository = new PrismaPenalityRepository(prisma)
   const schedulingRepository = new PrismaSchedulingRepository(prisma)
   const readerRepository = new PrismaReaderRepository(prisma)
-  const mailProvider = new ResendMailProvider()
+  const mailProvider = new NodemailerProvider()
 
   const createLoanUseCase = new CreateLoanUseCase(
     loanRepository,

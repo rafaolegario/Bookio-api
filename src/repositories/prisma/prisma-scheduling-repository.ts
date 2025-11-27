@@ -82,6 +82,35 @@ export class PrismaSchedulingRepository implements SchedulingRepository {
     )
   }
 
+  async findByLibraryId(libraryId: string): Promise<Scheduling[]> {
+    const schedulings = await this.prisma.scheduling.findMany({
+      where: {
+        book: {
+          libraryId: libraryId
+        }
+      },
+      include: {
+        reader: true,
+        book: true
+      }
+    })
+
+    return schedulings.map(
+      (scheduling) =>
+        new Scheduling(
+          {
+            readerId: new UniqueEntityId(scheduling.readerId),
+            bookId: new UniqueEntityId(String(scheduling.bookId)),
+            status: scheduling.status as SchedulingStatus,
+            createdAt: scheduling.createdAt,
+            expiresAt: scheduling.expiresAt,
+            updatedAt: scheduling.updatedAt,
+          },
+          new UniqueEntityId(scheduling.id)
+        )
+    )
+  }
+
   async findPendingByReaderAndBook(
     readerId: string,
     bookId: string

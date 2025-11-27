@@ -5,7 +5,7 @@ import { PrismaReaderRepository } from '@/repositories/prisma/prisma-reader-repo
 import { PrismaClient } from '@prisma/client'
 import { CreateReaderUseCase } from '@/use-cases/account/reader/create-reader-use-case'
 import { S3StorageService } from '@/services/storage/s3-storage-service'
-import { ResendMailProvider } from '@/providers/resend-mail-provider'
+import { NodemailerProvider } from '@/providers/nodemailer-provider'
 
 const createReaderBodySchema = z.object({
   name: z.string(),
@@ -78,7 +78,7 @@ export async function CreateReaderController(
 
     const prisma = new PrismaClient()
     const readerRepository = new PrismaReaderRepository(prisma)
-    const mailProvider = new ResendMailProvider()
+    const mailProvider = new NodemailerProvider()
     const createReaderUseCase = new CreateReaderUseCase(readerRepository, mailProvider)
 
     await createReaderUseCase.execute({

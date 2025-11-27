@@ -7,6 +7,7 @@ import { CreateLoanController } from "./create-loan.controller";
 import { GetLoanByIdController } from "./get-loan-by-id.controller";
 import { ListLoansController } from "./list-loans.controller";
 import { ListLoansByReaderController } from "./list-loans-by-reader.controller";
+import { GetLoansByLibraryIdController } from "./get-loans-by-library-id.controller";
 import { VerifyLoanStatusController } from "./verify-loan-status.controller";
 import { DeleteLoanController } from "./delete-loan.controller";
 
@@ -96,6 +97,37 @@ export async function loansRoutes(app: FastifyInstance) {
         },
       },
       ListLoansByReaderController,
+    );
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .get(
+      "/libraries/:libraryId/loans",
+      {
+        onRequest: [libraryOnlyMiddleware],
+        schema: {
+          tags: ["Empréstimos"],
+          summary: "Listar empréstimos de uma biblioteca",
+          params: z.object({ libraryId: z.string().uuid() }),
+          response: {
+            200: z.object({
+              loans: z.array(
+                z.object({
+                  id: z.string(),
+                  bookId: z.string(),
+                  readerId: z.string(),
+                  returnDate: z.date(),
+                  dueDate: z.date(),
+                  status: z.string(),
+                  actualReturnDate: z.date().optional(),
+                  createdAt: z.date(),
+                  updatedAt: z.date().optional(),
+                }),
+              ),
+            }),
+          },
+        },
+      },
+      GetLoansByLibraryIdController,
     );
   app
     .withTypeProvider<ZodTypeProvider>()

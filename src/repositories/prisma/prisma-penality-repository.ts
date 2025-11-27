@@ -85,6 +85,40 @@ export class PrismaPenalityRepository implements PenalityRepository {
     )
   }
 
+  async findByLibraryId(libraryId: string): Promise<Penality[]> {
+    const penalties = await this.prisma.penality.findMany({
+      where: {
+        reader: {
+          libraryId: libraryId
+        }
+      },
+      include: {
+        reader: true,
+        loan: {
+          include: {
+            book: true
+          }
+        }
+      }
+    })
+
+    return penalties.map(
+      (penality) =>
+        new Penality(
+          {
+            readerId: penality.readerId,
+            loanId: penality.loanId,
+            amount: penality.amount,
+            paid: penality.paid,
+            dueDate: penality.dueDate,
+            createdAt: penality.createdAt,
+            updatedAt: penality.updatedAt ?? undefined,
+          },
+          new UniqueEntityId(penality.id)
+        )
+    )
+  }
+
   async findUnpaidPenalities(): Promise<Penality[]> {
     const penalties = await this.prisma.penality.findMany({
       where: { paid: false },

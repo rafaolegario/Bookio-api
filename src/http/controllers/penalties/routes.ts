@@ -6,6 +6,7 @@ import { authMiddleware } from "../../middleware/auth";
 import { CreatePenalityController } from "./create-penality.controller";
 import { GetPenalityByIdController } from "./get-penality-by-id.controller";
 import { GetPenalitiesByReaderIdController } from "./get-penalities-by-reader-id.controller";
+import { GetPenalitiesByLibraryIdController } from "./get-penalities-by-library-id.controller";
 import { PayPenalityController } from "./pay-penality.controller";
 
 export async function penaltiesRoutes(app: FastifyInstance) {
@@ -89,6 +90,37 @@ export async function penaltiesRoutes(app: FastifyInstance) {
         },
       },
       GetPenalitiesByReaderIdController,
+    );
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .get(
+      "/libraries/:libraryId/penalties",
+      {
+        onRequest: [libraryOnlyMiddleware],
+        schema: {
+          tags: ["Multas"],
+          summary: "Listar multas de uma biblioteca",
+          params: z.object({ libraryId: z.string().uuid() }),
+          response: {
+            200: z.object({
+              penalities: z.array(
+                z.object({
+                  id: z.string(),
+                  readerId: z.string(),
+                  loanId: z.string(),
+                  amount: z.number(),
+                  paid: z.boolean(),
+                  dueDate: z.date(),
+                  paymentLink: z.string().optional(),
+                  createdAt: z.date(),
+                  updatedAt: z.date().optional(),
+                }),
+              ),
+            }),
+          },
+        },
+      },
+      GetPenalitiesByLibraryIdController,
     );
   app
     .withTypeProvider<ZodTypeProvider>()
