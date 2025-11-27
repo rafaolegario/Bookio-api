@@ -4,7 +4,6 @@ import { NotAllowedError } from '@/use-cases/errors/not-allowed-error'
 import { PrismaLibraryRepository } from '@/repositories/prisma/prisma-library-repository'
 import { PrismaClient } from '@prisma/client'
 import { CreateLibraryUseCase } from '@/use-cases/account/library/create-library-use-case'
-import { NodemailerProvider } from '@/providers/nodemailer-provider'
 
 export async function CreateLibraryController(
   request: FastifyRequest,
@@ -30,11 +29,7 @@ export async function CreateLibraryController(
   try {
     const prisma = new PrismaClient()
     const libraryRepository = new PrismaLibraryRepository(prisma)
-    const mailProvider = new NodemailerProvider()
-    const createLibraryUseCase = new CreateLibraryUseCase(
-      libraryRepository,
-      mailProvider
-    )
+    const createLibraryUseCase = new CreateLibraryUseCase(libraryRepository)
 
     await createLibraryUseCase.execute({
       name,

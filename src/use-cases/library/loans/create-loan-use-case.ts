@@ -8,7 +8,6 @@ import { SchedulingRepository } from '../../../repositories/scheduling-repositor
 import { ReaderRepository } from '../../../repositories/reader-repository'
 import { PendingPenalitiesError } from '../../errors/pending-penalities-error'
 import { SchedulingStatus } from '../../../entities/Scheduling'
-import { MailProvider } from '../../../providers/mail-provider'
 
 interface CreateLoanRequest {
   bookId: string
@@ -24,7 +23,6 @@ export class CreateLoanUseCase {
     private penalityRepository: PenalityRepository,
     private schedulingRepository: SchedulingRepository,
     private readerRepository: ReaderRepository,
-    private mailProvider: MailProvider,
   ) { }
 
   async execute({ bookId, readerId, returnDate }: CreateLoanRequest) {
@@ -88,57 +86,6 @@ export class CreateLoanUseCase {
 
     await this.loanRepository.create(loan)
     await this.bookRepository.save(book)
-
-    // Formatar datas para exibição
-    const formattedDueDate = dueDate.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    })
-    const formattedReturnDate = returnDate.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    })
-
-    // Enviar email de confirmação do empréstimo
-    await this.mailProvider.sendMail({
-      to: reader.getEmail(),
-      subject: 'Empréstimo Confirmado - Bookio',
-      body: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #333;">Empréstimo Confirmado! 📖</h1>
-
-          <p style="font-size: 16px; color: #555;">
-            Olá, <strong>${reader.getName()}</strong>!
-          </p>
-
-          <p style="font-size: 16px; color: #555;">
-            Seu empréstimo foi registrado com sucesso. Confira os detalhes abaixo:
-          </p>
-
-          <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h2 style="color: #333; margin-top: 0;">Detalhes do Empréstimo:</h2>
-            <p style="margin: 10px 0;"><strong>Livro:</strong> ${book.getTitle()}</p>
-            <p style="margin: 10px 0;"><strong>Autor:</strong> ${book.getAuthor()}</p>
-            <p style="margin: 10px 0;"><strong>Data de Devolução:</strong> ${formattedReturnDate}</p>
-            <p style="margin: 10px 0;"><strong>Prazo Sugerido:</strong> ${formattedDueDate}</p>
-          </div>
-
-          <div style="background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; border-radius: 4px; margin: 20px 0;">
-            <p style="margin: 0; color: #856404;">
-              <strong>⚠️ Atenção:</strong><br>
-              Lembre-se de devolver o livro até <strong>${formattedReturnDate}</strong> para evitar multas.
-            </p>
-          </div>
-
-          <p style="font-size: 14px; color: #555; margin-top: 30px;">
-            Boa leitura!<br>
-            <strong>Equipe Bookio</strong>
-          </p>
-        </div>
-      `
-    })
 
     return {
       loan,
