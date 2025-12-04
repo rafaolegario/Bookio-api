@@ -8,7 +8,7 @@ export async function GetLoanByIdController(
   reply: FastifyReply,
 ) {
   const { loanId } = request.params as { loanId: string }
-  const { userId, role } = request.user as { userId: string, role: string }
+  const { sub: userId, role } = request.user
 
   const loanRepository = new PrismaLoanRepository(prisma)
   const getLoanByIdUseCase = new GetLoanByIdUseCase(loanRepository)

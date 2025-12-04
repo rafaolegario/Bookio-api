@@ -8,7 +8,7 @@ export async function DeleteLoanController(
   reply: FastifyReply,
 ) {
   const { loanId } = request.params as { loanId: string }
-  const { userId } = request.user as { userId: string }
+  const userId = request.user.sub
 
   const loanRepository = new PrismaLoanRepository(prisma)
   const deleteLoanUseCase = new DeleteLoanUseCase(loanRepository)

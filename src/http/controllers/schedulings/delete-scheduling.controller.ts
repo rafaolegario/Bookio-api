@@ -8,7 +8,7 @@ export async function DeleteSchedulingController(
   reply: FastifyReply,
 ) {
   const { schedulingId } = request.params as { schedulingId: string }
-  const { userId } = request.user as { userId: string }
+  const userId = request.user.sub
 
   const schedulingRepository = new PrismaSchedulingRepository(prisma)
   const deleteSchedulingUseCase = new DeleteSchedulingUseCase(
