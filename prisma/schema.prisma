@@ -107,9 +107,7 @@ model Loan {
   bookId           Int
   readerId         String
   returnDate       DateTime
-  dueDate          DateTime
   status           LoanStatus
-  actualReturnDate DateTime?
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 

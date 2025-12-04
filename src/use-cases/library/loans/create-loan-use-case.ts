@@ -71,14 +71,10 @@ export class CreateLoanUseCase {
       await this.schedulingRepository.update(scheduling.getId, scheduling)
     }
 
-    // Se dueDate não for fornecida, definir como 7 dias antes do returnDate
-    const dueDate = new Date(returnDate.getTime() - 7 * 24 * 60 * 60 * 1000)
-
     const loan = new Loan({
       bookId: new UniqueEntityId(bookId),
       readerId: new UniqueEntityId(readerId),
       returnDate,
-      dueDate,
       status: LoanStatus.Borrowed,
     })
 

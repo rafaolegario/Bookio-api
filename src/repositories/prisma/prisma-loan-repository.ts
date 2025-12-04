@@ -23,9 +23,7 @@ export class PrismaLoanRepository implements LoanRepository {
         bookId: new UniqueEntityId(String(loan.bookId)),
         readerId: new UniqueEntityId(loan.readerId),
         returnDate: loan.returnDate,
-        dueDate: loan.dueDate,
         status: loan.status as LoanStatus,
-        actualReturnDate: loan.actualReturnDate ?? undefined,
         createdAt: loan.createdAt,
         updatedAt: loan.updatedAt,
       },
@@ -38,7 +36,7 @@ export class PrismaLoanRepository implements LoanRepository {
       where: {
         id: loanId,
         book: {
-          libraryId,
+          libraryId: libraryId || undefined,
         },
       },
     })
@@ -50,9 +48,7 @@ export class PrismaLoanRepository implements LoanRepository {
         bookId: new UniqueEntityId(String(loan.bookId)),
         readerId: new UniqueEntityId(loan.readerId),
         returnDate: loan.returnDate,
-        dueDate: loan.dueDate,
         status: loan.status as LoanStatus,
-        actualReturnDate: loan.actualReturnDate ?? undefined,
         createdAt: loan.createdAt,
         updatedAt: loan.updatedAt,
       },
@@ -76,9 +72,7 @@ export class PrismaLoanRepository implements LoanRepository {
             bookId: new UniqueEntityId(String(loan.bookId)),
             readerId: new UniqueEntityId(loan.readerId),
             returnDate: loan.returnDate,
-            dueDate: loan.dueDate,
             status: loan.status as LoanStatus,
-            actualReturnDate: loan.actualReturnDate ?? undefined,
             createdAt: loan.createdAt,
             updatedAt: loan.updatedAt,
           },
@@ -99,9 +93,7 @@ export class PrismaLoanRepository implements LoanRepository {
             bookId: new UniqueEntityId(String(loan.bookId)),
             readerId: new UniqueEntityId(loan.readerId),
             returnDate: loan.returnDate,
-            dueDate: loan.dueDate,
             status: loan.status as LoanStatus,
-            actualReturnDate: loan.actualReturnDate ?? undefined,
             createdAt: loan.createdAt,
             updatedAt: loan.updatedAt,
           },
@@ -113,7 +105,10 @@ export class PrismaLoanRepository implements LoanRepository {
   async findOverdueLoans(): Promise<Loan[]> {
     const loans = await this.prisma.loan.findMany({
       where: {
-        status: 'Overdue',
+        status: 'Borrowed',
+        returnDate: {
+          lt: new Date(),
+        },
       },
     })
 
@@ -124,9 +119,7 @@ export class PrismaLoanRepository implements LoanRepository {
             bookId: new UniqueEntityId(String(loan.bookId)),
             readerId: new UniqueEntityId(loan.readerId),
             returnDate: loan.returnDate,
-            dueDate: loan.dueDate,
             status: loan.status as LoanStatus,
-            actualReturnDate: loan.actualReturnDate ?? undefined,
             createdAt: loan.createdAt,
             updatedAt: loan.updatedAt,
           },
@@ -142,9 +135,7 @@ export class PrismaLoanRepository implements LoanRepository {
         bookId: Number(loan.getBookId.toString()),
         readerId: loan.getReaderId.toString(),
         returnDate: loan.getReturnDate,
-        dueDate: loan.getDueDate,
         status: loan.getStatus,
-        actualReturnDate: loan.getActualReturnDate,
         createdAt: loan.getCreatedAt(),
         updatedAt: loan.getUpdatedAt(),
       },
@@ -164,9 +155,7 @@ export class PrismaLoanRepository implements LoanRepository {
         bookId: Number(loan.getBookId.toString()),
         readerId: loan.getReaderId.toString(),
         returnDate: loan.getReturnDate,
-        dueDate: loan.getDueDate,
         status: loan.getStatus,
-        actualReturnDate: loan.getActualReturnDate,
         updatedAt: loan.getUpdatedAt(),
       },
     })

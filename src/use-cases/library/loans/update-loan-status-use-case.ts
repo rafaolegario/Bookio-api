@@ -37,10 +37,6 @@ export class UpdateLoanStatusUseCase {
 
     loan.setStatus = status as LoanStatus
 
-    if (status === LoanStatus.Returned) {
-      loan.setActualReturnDate = new Date()
-    }
-
     await this.loanRepository.save(loan)
 
     return {

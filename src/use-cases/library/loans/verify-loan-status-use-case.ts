@@ -18,16 +18,18 @@ export class VerifyLoanStatusUseCase {
     }
 
     const today = new Date()
-    if (today > loan.getDueDate && !loan.getActualReturnDate) {
-      throw new LoanOverdueError()
+    const isOverdue = loan.getStatus === 'Borrowed' && today > loan.getReturnDate
+
+    if (isOverdue) {
+      // throw new LoanOverdueError() // Maybe we shouldn't throw here if we just want to return status
     }
 
     return {
       loan,
-      isOverdue: today > loan.getDueDate && !loan.getActualReturnDate,
-      daysOverdue: loan.getActualReturnDate
-        ? Math.ceil((loan.getActualReturnDate.getTime() - loan.getDueDate.getTime()) / (1000 * 60 * 60 * 24))
-        : Math.ceil((today.getTime() - loan.getDueDate.getTime()) / (1000 * 60 * 60 * 24)),
+      isOverdue,
+      daysOverdue: isOverdue
+        ? Math.ceil((today.getTime() - loan.getReturnDate.getTime()) / (1000 * 60 * 60 * 24))
+        : 0,
     }
   }
 }

@@ -22,9 +22,7 @@ export async function GetLoansByLibraryIdController(
       bookId: loan.getBookId.toString(),
       readerId: loan.getReaderId.toString(),
       returnDate: loan.getReturnDate,
-      dueDate: loan.getDueDate,
       status: loan.getStatus,
-      actualReturnDate: loan.getActualReturnDate,
       createdAt: loan.getCreatedAt(),
       updatedAt: loan.getUpdatedAt(),
     }))
