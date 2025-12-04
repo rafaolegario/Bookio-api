@@ -53,7 +53,7 @@ export async function CreateBookController(
 
     return reply.status(201).send({
       book: {
-        id: book.getId(),
+        id: book.getId()!,
         title: book.getTitle(),
         author: book.getAuthor(),
       }

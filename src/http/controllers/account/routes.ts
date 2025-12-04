@@ -248,6 +248,7 @@ export async function accountRoutes(app: FastifyInstance) {
                 pictureUrl: z.string().optional(),
                 active: z.boolean(),
                 suspense: z.number(),
+                libraryId: z.string(),
                 address: z.object({
                   cep: z.string(),
                   street: z.string(),

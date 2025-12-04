@@ -32,6 +32,7 @@ export async function GetReadersByLibraryController(
         pictureUrl: reader.getPictureUrl(),
         active: reader.isActive(),
         suspense: reader.getSuspense(),
+        libraryId: reader.getLibraryId().toString(),
         address: reader.getAddress(),
         createdAt: reader.getCreatedAt(),
       })),

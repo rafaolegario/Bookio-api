@@ -9,6 +9,7 @@ import { ListLoansController } from "./list-loans.controller";
 import { ListLoansByReaderController } from "./list-loans-by-reader.controller";
 import { GetLoansByLibraryIdController } from "./get-loans-by-library-id.controller";
 import { VerifyLoanStatusController } from "./verify-loan-status.controller";
+import { UpdateLoanStatusController } from "./update-loan-status.controller";
 import { DeleteLoanController } from "./delete-loan.controller";
 
 export async function loansRoutes(app: FastifyInstance) {
@@ -149,6 +150,28 @@ export async function loansRoutes(app: FastifyInstance) {
         },
       },
       VerifyLoanStatusController,
+    );
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .patch(
+      "/loans/:loanId/status",
+      {
+        onRequest: [libraryOnlyMiddleware],
+        schema: {
+          tags: ["Empréstimos"],
+          summary: "Atualizar status do empréstimo",
+          params: z.object({ loanId: z.string().uuid() }),
+          body: z.object({
+            status: z.enum(['Returned', 'Overdue', 'Borrowed']),
+          }),
+          response: {
+            200: z.object({
+              loan: z.object({ id: z.string(), status: z.string() }),
+            }),
+          },
+        },
+      },
+      UpdateLoanStatusController,
     );
   app
     .withTypeProvider<ZodTypeProvider>()
