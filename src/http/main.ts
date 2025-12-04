@@ -10,7 +10,7 @@ import {
 import jwt from '@fastify/jwt'
 import cookie from '@fastify/cookie'
 import multipart from '@fastify/multipart'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { accountRoutes } from './controllers/account/routes'
 import { booksRoutes } from './controllers/books/routes'
 import { loansRoutes } from './controllers/loans/routes'
@@ -33,6 +33,7 @@ app.setSerializerCompiler(serializerCompiler)
 app.register(cookie)
 
 app.register(multipart, {
+  attachFieldsToBody: 'keyValues',
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB
   },
@@ -249,7 +250,6 @@ app.get('/health', async () => {
 })
 
 // Inicializar serviços de monitoramento
-const prisma = new PrismaClient()
 const loanRepository = new PrismaLoanRepository(prisma)
 const penalityRepository = new PrismaPenalityRepository(prisma)
 const schedulingRepository = new PrismaSchedulingRepository(prisma)

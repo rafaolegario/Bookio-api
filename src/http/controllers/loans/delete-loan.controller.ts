@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { PrismaLoanRepository } from '@/repositories/prisma/prisma-loan-repository'
 import { DeleteLoanUseCase } from '@/use-cases/library/loans/delete-loan-use-case'
 
@@ -10,7 +10,6 @@ export async function DeleteLoanController(
   const { loanId } = request.params as { loanId: string }
   const { userId } = request.user as { userId: string }
 
-  const prisma = new PrismaClient()
   const loanRepository = new PrismaLoanRepository(prisma)
   const deleteLoanUseCase = new DeleteLoanUseCase(loanRepository)
 

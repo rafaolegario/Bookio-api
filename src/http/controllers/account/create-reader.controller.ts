@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { NotAllowedError } from '@/use-cases/errors/not-allowed-error'
 import { PrismaReaderRepository } from '@/repositories/prisma/prisma-reader-repository'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { CreateReaderUseCase } from '@/use-cases/account/reader/create-reader-use-case'
 
 const createReaderBodySchema = z.object({
@@ -28,7 +28,6 @@ export async function CreateReaderController(
     const { name, email, libraryId, cpf, address, password } =
       createReaderBodySchema.parse(request.body)
 
-    const prisma = new PrismaClient()
     const readerRepository = new PrismaReaderRepository(prisma)
     const createReaderUseCase = new CreateReaderUseCase(readerRepository)
     const numero = Math.floor(Math.random() * 90)

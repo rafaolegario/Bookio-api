@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { PrismaBookRepository } from '@/repositories/prisma/prisma-book-repository'
 import { UpdateBookUseCase } from '@/use-cases/library/book/update-book-use-case'
 import { BookGenders } from '@/entities/Book'
@@ -43,7 +43,6 @@ export async function UpdateBookController(
 
     const data = updateBookSchema.parse(bodyData)
 
-    const prisma = new PrismaClient()
     const bookRepository = new PrismaBookRepository(prisma)
     const updateBookUseCase = new UpdateBookUseCase(bookRepository)
 

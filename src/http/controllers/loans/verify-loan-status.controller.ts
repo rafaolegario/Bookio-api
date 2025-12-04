@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { PrismaLoanRepository } from '@/repositories/prisma/prisma-loan-repository'
 import { VerifyLoanStatusUseCase } from '@/use-cases/library/loans/verify-loan-status-use-case'
 
@@ -10,7 +10,6 @@ export async function VerifyLoanStatusController(
   const { loanId } = request.params as { loanId: string }
   const { userId, role } = request.user as { userId: string, role: string }
 
-  const prisma = new PrismaClient()
   const loanRepository = new PrismaLoanRepository(prisma)
   const verifyLoanStatusUseCase = new VerifyLoanStatusUseCase(loanRepository)
 

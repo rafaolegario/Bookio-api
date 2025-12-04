@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { PrismaPenalityRepository } from '@/repositories/prisma/prisma-penality-repository'
 import { GetPenalityByIdUseCase } from '@/use-cases/library/penalities/get-penality-by-id-use-case'
 
@@ -9,7 +9,6 @@ export async function GetPenalityByIdController(
 ) {
   const { penalityId } = request.params as { penalityId: string }
 
-  const prisma = new PrismaClient()
   const penalityRepository = new PrismaPenalityRepository(prisma)
   const getPenalityByIdUseCase = new GetPenalityByIdUseCase(penalityRepository)
 
@@ -21,7 +20,6 @@ export async function GetPenalityByIdController(
       loanId: penality.loanId.toString(),
       amount: penality.amount,
       paid: penality.paid,
-      paymentLink: penality.paymentLink,
       createdAt: penality.createdAt,
     }
   })

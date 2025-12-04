@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { PrismaLoanRepository } from '@/repositories/prisma/prisma-loan-repository'
 import { GetLoansByLibraryIdUseCase } from '@/use-cases/library/loans/get-loans-by-library-id-use-case'
 
@@ -9,7 +9,6 @@ export async function GetLoansByLibraryIdController(
 ) {
   const { libraryId } = request.params as { libraryId: string }
 
-  const prisma = new PrismaClient()
   const loanRepository = new PrismaLoanRepository(prisma)
   const getLoansByLibraryIdUseCase = new GetLoansByLibraryIdUseCase(loanRepository)
 
@@ -26,8 +25,8 @@ export async function GetLoansByLibraryIdController(
       dueDate: loan.getDueDate,
       status: loan.getStatus,
       actualReturnDate: loan.getActualReturnDate,
-      createdAt: loan.getCreatedAt,
-      updatedAt: loan.getUpdatedAt,
+      createdAt: loan.getCreatedAt(),
+      updatedAt: loan.getUpdatedAt(),
     }))
   })
 }

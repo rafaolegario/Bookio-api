@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { NotAllowedError } from '@/use-cases/errors/not-allowed-error'
 import { PrismaLibraryRepository } from '@/repositories/prisma/prisma-library-repository'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { CreateLibraryUseCase } from '@/use-cases/account/library/create-library-use-case'
 
 export async function CreateLibraryController(
@@ -27,7 +27,6 @@ export async function CreateLibraryController(
     createLibraryBodySchema.parse(request.body)
 
   try {
-    const prisma = new PrismaClient()
     const libraryRepository = new PrismaLibraryRepository(prisma)
     const createLibraryUseCase = new CreateLibraryUseCase(libraryRepository)
 

@@ -142,7 +142,6 @@ model Penality {
   amount      Float
   paid        Boolean  @default(false)
   dueDate     DateTime
-  paymentLink String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { PrismaSchedulingRepository } from '@/repositories/prisma/prisma-scheduling-repository'
 import { ListSchedulingsByReaderUseCase } from '@/use-cases/library/scheduling/list-schedulings-by-reader-use-case'
 
@@ -9,7 +9,6 @@ export async function ListSchedulingsByReaderController(
 ) {
   const { readerId } = request.params as { readerId: string }
 
-  const prisma = new PrismaClient()
   const schedulingRepository = new PrismaSchedulingRepository(prisma)
   const listSchedulingsByReaderUseCase = new ListSchedulingsByReaderUseCase(
     schedulingRepository,

@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { NotFoundError } from '@/use-cases/errors/not-found-error'
 import { PrismaLibraryRepository } from '@/repositories/prisma/prisma-library-repository'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { GetLibraryUseCase } from '@/use-cases/account/library/get-library-by-id-use-case'
 
 export async function GetLibraryController(
@@ -16,7 +16,6 @@ export async function GetLibraryController(
   const { libraryId } = getLibraryParamsSchema.parse(request.params)
 
   try {
-    const prisma = new PrismaClient()
     const libraryRepository = new PrismaLibraryRepository(prisma)
     const getLibraryUseCase = new GetLibraryUseCase(libraryRepository)
 

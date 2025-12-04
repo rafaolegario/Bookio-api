@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { PrismaLoanRepository } from '@/repositories/prisma/prisma-loan-repository'
 import { PrismaBookRepository } from '@/repositories/prisma/prisma-book-repository'
 import { PrismaPenalityRepository } from '@/repositories/prisma/prisma-penality-repository'
@@ -17,7 +17,6 @@ export async function CreateLoanController(
     returnDate: Date
   }
 
-  const prisma = new PrismaClient()
   const loanRepository = new PrismaLoanRepository(prisma)
   const bookRepository = new PrismaBookRepository(prisma)
   const penalityRepository = new PrismaPenalityRepository(prisma)

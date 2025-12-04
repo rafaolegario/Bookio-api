@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { PrismaBookRepository } from '@/repositories/prisma/prisma-book-repository'
 import { CreateBookUseCase } from '@/use-cases/library/book/create-book-use-case'
 import { BookGenders } from '@/entities/Book'
@@ -33,11 +33,11 @@ export async function CreateBookController(
   reply: FastifyReply,
 ) {
   try {
-    const bodyData = request.body
+    const body = request.body as { data: string }
+    const bodyData = JSON.parse(body.data)
     const { libraryId, author, title, gender, year, available } =
       createBookBodySchema.parse(bodyData)
 
-    const prisma = new PrismaClient()
     const bookRepository = new PrismaBookRepository(prisma)
     const createBookUseCase = new CreateBookUseCase(bookRepository)
 
@@ -50,8 +50,6 @@ export async function CreateBookController(
       year,
       available,
     })
-
-    await prisma.$disconnect()
 
     return reply.status(201).send({
       book: {

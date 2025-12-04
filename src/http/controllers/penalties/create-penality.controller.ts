@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { PrismaPenalityRepository } from '@/repositories/prisma/prisma-penality-repository'
 import { PrismaLoanRepository } from '@/repositories/prisma/prisma-loan-repository'
 import { PrismaReaderRepository } from '@/repositories/prisma/prisma-reader-repository'
@@ -17,7 +17,6 @@ export async function CreatePenalityController(
     dueDate: Date
   }
 
-  const prisma = new PrismaClient()
   const penalityRepository = new PrismaPenalityRepository(prisma)
   const readerRepository = new PrismaReaderRepository(prisma)
   const loanRepository = new PrismaLoanRepository(prisma)
@@ -42,7 +41,6 @@ export async function CreatePenalityController(
       id: penality.id,
       amount: penality.amount,
       paid: penality.paid,
-      paymentLink: penality.paymentLink,
     }
   })
 }

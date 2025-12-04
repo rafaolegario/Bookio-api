@@ -3,7 +3,7 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { NotFoundError } from '@/use-cases/errors/not-found-error'
 import { NotAllowedError } from '@/use-cases/errors/not-allowed-error'
 import { PrismaReaderRepository } from '@/repositories/prisma/prisma-reader-repository'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { UpdateReaderUseCase } from '@/use-cases/account/reader/update-reader-use-case'
 
 const updateReaderBodySchema = z.object({
@@ -31,7 +31,6 @@ export async function UpdateReaderController(
 
     const parsedData = bodyData ? updateReaderBodySchema.parse(bodyData) : {}
 
-    const prisma = new PrismaClient()
     const readerRepository = new PrismaReaderRepository(prisma)
     const updateReaderUseCase = new UpdateReaderUseCase(readerRepository)
     const numero = Math.floor(Math.random() * 90)

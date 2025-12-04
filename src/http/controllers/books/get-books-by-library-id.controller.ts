@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { PrismaBookRepository } from '@/repositories/prisma/prisma-book-repository'
 import { GetBooksByLibraryIdUseCase } from '@/use-cases/library/book/get-all-books-by-library-id-use-case'
 
@@ -9,7 +9,6 @@ export async function GetBooksByLibraryIdController(
 ) {
   const { libraryId } = request.params as { libraryId: string }
 
-  const prisma = new PrismaClient()
   const bookRepository = new PrismaBookRepository(prisma)
   const getAllBooksUseCase = new GetBooksByLibraryIdUseCase(bookRepository)
 

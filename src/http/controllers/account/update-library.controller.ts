@@ -3,7 +3,7 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { NotFoundError } from '@/use-cases/errors/not-found-error'
 import { NotAllowedError } from '@/use-cases/errors/not-allowed-error'
 import { PrismaLibraryRepository } from '@/repositories/prisma/prisma-library-repository'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { UpdateLibraryUseCase } from '@/use-cases/account/library/update-library-use-case'
 
 export async function UpdateLibraryController(
@@ -35,7 +35,6 @@ export async function UpdateLibraryController(
   )
 
   try {
-    const prisma = new PrismaClient()
     const libraryRepository = new PrismaLibraryRepository(prisma)
     const updateLibraryUseCase = new UpdateLibraryUseCase(libraryRepository)
 

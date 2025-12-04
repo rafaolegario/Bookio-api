@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { NotFoundError } from '@/use-cases/errors/not-found-error'
 import { PrismaUserRepository } from '@/repositories/prisma/prisma-user-repository'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { DeleteUserUseCase } from '@/use-cases/account/delete-user-use-case'
 
 export async function DeleteUserController(
@@ -16,7 +16,6 @@ export async function DeleteUserController(
   const { userId } = deleteUserParamsSchema.parse(request.params)
 
   try {
-    const prisma = new PrismaClient()
     const userRepository = new PrismaUserRepository(prisma)
     const deleteUserUseCase = new DeleteUserUseCase(userRepository)
 
