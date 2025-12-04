@@ -22,14 +22,18 @@ export async function loansRoutes(app: FastifyInstance) {
         schema: {
           tags: ["Empréstimos"],
           summary: "Criar empréstimo",
+          description: "Cria um novo empréstimo. A data de devolução (returnDate) é obrigatória e define o prazo final para entrega.",
           body: z.object({
-            bookId: z.string(),
-            readerId: z.string().uuid(),
-            returnDate: z.string().transform((val) => new Date(val)),
+            bookId: z.string().describe("ID do livro"),
+            readerId: z.string().uuid().describe("ID do leitor"),
+            returnDate: z.string().transform((val) => new Date(val)).describe("Data limite para devolução (ISO 8601)"),
           }),
           response: {
             201: z.object({
-              loan: z.object({ id: z.string(), status: z.string() }),
+              loan: z.object({ 
+                id: z.string(), 
+                status: z.string() 
+              }),
             }),
           },
         },
@@ -52,7 +56,7 @@ export async function loansRoutes(app: FastifyInstance) {
                 id: z.string(),
                 bookId: z.string(),
                 readerId: z.string(),
-                returnDate: z.date(),
+                returnDate: z.date().describe("Data limite para devolução"),
                 status: z.string(),
               }),
             }),
@@ -115,7 +119,7 @@ export async function loansRoutes(app: FastifyInstance) {
                   id: z.string(),
                   bookId: z.string(),
                   readerId: z.string(),
-                  returnDate: z.date(),
+                  returnDate: z.date().describe("Data limite para devolução"),
                   status: z.string(),
                   createdAt: z.date(),
                   updatedAt: z.date().optional(),
@@ -157,9 +161,10 @@ export async function loansRoutes(app: FastifyInstance) {
         schema: {
           tags: ["Empréstimos"],
           summary: "Atualizar status do empréstimo",
+          description: "Atualiza o status do empréstimo. Use 'Returned' para devolução, 'Overdue' para atraso ou 'Borrowed' para em andamento.",
           params: z.object({ loanId: z.string().uuid() }),
           body: z.object({
-            status: z.enum(['Returned', 'Overdue', 'Borrowed']),
+            status: z.enum(['Returned', 'Overdue', 'Borrowed']).describe("Novo status do empréstimo"),
           }),
           response: {
             200: z.object({
