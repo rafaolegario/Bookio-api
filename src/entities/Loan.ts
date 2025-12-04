@@ -10,6 +10,7 @@ export interface LoanProps {
   bookId: UniqueEntityId
   readerId: UniqueEntityId
   returnDate: Date
+  returnedAt?: Date
   status: LoanStatus
   createdAt?: Date
   updatedAt?: Date
@@ -20,6 +21,7 @@ export class Loan {
   private bookId: UniqueEntityId
   private readerId: UniqueEntityId
   private returnDate: Date
+  private returnedAt?: Date
   private status: LoanStatus
   private createdAt: Date
   private updatedAt: Date
@@ -29,6 +31,7 @@ export class Loan {
     this.bookId = props.bookId
     this.readerId = props.readerId
     this.returnDate = props.returnDate
+    this.returnedAt = props.returnedAt
     this.status = props.status
     this.createdAt = props.createdAt ?? new Date()
     this.updatedAt = props.updatedAt ?? new Date()
@@ -50,12 +53,21 @@ export class Loan {
     return this.returnDate
   }
 
+  get getReturnedAt(): Date | undefined {
+    return this.returnedAt
+  }
+
   get getStatus(): LoanStatus {
     return this.status
   }
 
   set setStatus(status: LoanStatus) {
     this.status = status
+    this.updatedAt = new Date()
+  }
+
+  set setReturnedAt(date: Date) {
+    this.returnedAt = date
     this.updatedAt = new Date()
   }
 
