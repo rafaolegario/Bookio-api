@@ -45,8 +45,8 @@ export class CreateBookUseCase {
       total_loans: 0,
     });
 
-    await this.bookRepository.create(book);
+    const bookCreated = await this.bookRepository.create(book);
 
-    return book;
+    return bookCreated;
   }
 }

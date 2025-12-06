@@ -50,12 +50,15 @@ export async function CreateBookController(
       year,
       available,
     })
-
     return reply.status(201).send({
       book: {
         id: book.getId()!,
         title: book.getTitle(),
         author: book.getAuthor(),
+        gender: book.getGender(),
+        year: book.getYear().toISOString(),
+        available: book.getAvailable(),
+        imageUrl: book.getImageUrl(),
       }
     })
   } catch (error) {
